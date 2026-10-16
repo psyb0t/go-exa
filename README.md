@@ -124,6 +124,10 @@ make sec       # gitleaks, govulncheck, semgrep
 make generate  # download the spec and regenerate
 ```
 
+### Automatic regeneration
+
+A scheduled workflow (`.github/workflows/regen.yml`) runs `make generate` once a day. When Exa's spec has changed the client, it runs `make lint`, `make test` and `make sec`, writes a CHANGELOG entry describing the new, removed and changed client methods and types, bumps the version, commits, tags and publishes the release. If nothing changed, the run does nothing. A failed scheduled run opens an issue instead of pushing.
+
 ## License
 
 [MIT](LICENSE). The generated code comes from Exa's published API specification. The specification itself is not redistributed here.
