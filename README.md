@@ -83,6 +83,34 @@ make generate
 - `scripts/fetch-spec.sh` downloads `exa-openapi-spec.yaml` from [exa-labs/openapi-spec](https://github.com/exa-labs/openapi-spec) to `api/openapi.yaml`.
 - oapi-codegen generates `client.gen.go` with `config.yaml`.
 
+## Agent integrations
+
+The [skill](.agents/skills/go-exa) teaches a coding agent how to use go-exa when it writes Go. It works in any agent that reads `.agents/skills/`, and installs natively in the clients below.
+
+### Claude Code
+
+```bash
+claude plugin marketplace add psyb0t/agents
+claude plugin install go-exa@psyb0t
+```
+
+### Codex
+
+```bash
+codex plugin marketplace add psyb0t/agents
+codex plugin add go-exa@psyb0t
+```
+
+Codex also picks the skill up with no install in any checkout of this repo.
+
+### OpenClaw
+
+The skill is published to ClawHub on every release:
+
+```bash
+openclaw skills install @psyb0t/go-exa
+```
+
 ## Development
 
 Every command runs in the `Dockerfile.dev` image. The host needs only Docker and Make.
