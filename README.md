@@ -64,6 +64,8 @@ func main() {
 
 `example_test.go` runs the same code against a local test server, so `make test` fails if the example stops compiling.
 
+The full API, with the spec's descriptions as doc comments, is in the [Go reference](https://pkg.go.dev/github.com/psyb0t/go-exa) and in `go doc github.com/psyb0t/go-exa`.
+
 The spec reuses some names for both a schema and an operation's response wrapper. The schemas keep the plain name (`SearchResponse`, `AnswerResponse`, `FindSimilarResponse`) and the wrappers returned by the `...WithResponse` methods get a `2` suffix (`SearchResponse2`).
 
 ## Auth

@@ -36,7 +36,7 @@ Send the key as `x-api-key` from a request editor, either for every call with `e
 | `FindSimilarWithResponse` | `POST /findSimilar` | `FindSimilarJSONRequestBody` (`Url` required) | `*FindSimilarResponse` |
 | `GetContentsWithResponse` | `POST /contents` | `GetContentsJSONRequestBody` (`Urls` required) | `*ContentsResponse` |
 | `AnswerWithResponse` | `POST /answer` | `AnswerJSONRequestBody` (`Query` required) | `*AnswerResponse` |
-| `ResearchTasksCreateWithResponse` | `POST /research/v0/tasks` | `ResearchTasksCreateJSONRequestBody` (`Instructions` required) | the created task |
+| `ResearchTasksCreateWithResponse` | `POST /research/v0/tasks` | `ResearchTasksCreateJSONRequestBody` (`Instructions` required) | nil; the created task is in `JSON201` |
 | `ResearchTasksListWithResponse` | `GET /research/v0/tasks` | `*ResearchTasksListParams` (`Cursor`, `Limit`) | a page of tasks |
 | `ResearchControllerV0GetResearchTaskWithResponse` | `GET /research/v0/tasks/{id}` | task ID | the task and its status |
 
@@ -46,7 +46,7 @@ Search options on `SearchJSONRequestBody`: `Type` (`SearchJSONBodyTypeAuto`, `..
 
 | Field or method | Holds |
 |---|---|
-| `JSON200` | The decoded body on success, nil otherwise |
+| `JSON200` (`JSON201` for `ResearchTasksCreateWithResponse`) | The decoded body on success, nil otherwise |
 | `Body`, `StatusCode()`, `Status()`, `HTTPResponse` | The raw response |
 
 - `SearchResponse.Results` is `*[]ResultWithContent`: `Url`, `Title`, `Author`, `PublishedDate`, `Id`, plus `Text`, `Highlights` and `Summary` when you asked for contents. `RequestId`, `SearchType` and `CostDollars` describe the call.
