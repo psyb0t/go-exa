@@ -83,6 +83,8 @@ make generate
 - `scripts/fetch-spec.sh` downloads `exa-openapi-spec.yaml` from [exa-labs/openapi-spec](https://github.com/exa-labs/openapi-spec) to `api/openapi.yaml`.
 - oapi-codegen generates `client.gen.go` with `config.yaml`.
 
+`.github/workflows/regen.yml` does the same every day in CI. When the new spec changes the client, it runs `make lint`, `make test` and `make sec`. If a check fails, Claude edits the code and the checks run again, up to three times, and a review step reads the result. A passing change is committed with a CHANGELOG entry and tagged as the next release: a patch version for fixes and additions, a minor version for breaking changes.
+
 ## Agent integrations
 
 The [skill](.agents/skills/go-exa) teaches a coding agent how to use go-exa when it writes Go. It works in any agent that reads `.agents/skills/`, and installs natively in the clients below.

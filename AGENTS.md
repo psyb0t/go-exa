@@ -39,6 +39,7 @@ make sec       # gitleaks, govulncheck, semgrep
 - The spec reuses names for a schema and a response wrapper, so `config.yaml` turns on `resolve-type-name-collisions` and the wrappers get a `2` suffix (`SearchResponse2`). Turning it off breaks the build.
 - Several request and response fields are `oneOf` unions (`Answer`, `Context`, `Text`, `Highlights`). oapi-codegen generates `As...` and `From...` methods for them instead of plain fields; examples must use those.
 - `make generate` always downloads the current spec, so it can change the client even when nothing here changed. Review the generated diff before committing it.
+- `.github/workflows/regen.yml` regenerates the client every day and releases the result. When the checks fail, Claude edits the repository to fix them, but a fix may not touch the paths listed under `fix_protected_paths` in that workflow: the workflows, the Makefile, `AGENTS.md`, `.agents/rules/`, the lint, security and spec download scripts and their configs. A problem that needs a change there fails the run and needs a manual fix.
 
 ## Rules
 
