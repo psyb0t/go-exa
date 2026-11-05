@@ -32,23 +32,23 @@ Send the key as `x-api-key` from a request editor, either for every call with `e
 
 | Method | Endpoint | Body or params | `JSON200` |
 |---|---|---|---|
-| `SearchWithResponse` | `POST /search` | `SearchJSONRequestBody` (`Query` required) | `*SearchResponse` |
+| `SearchWithResponse` | `POST /search` | `SearchJSONRequestBody` (`Query` required) | `*SearchResponse`, a results or synthesis union |
 | `FindSimilarWithResponse` | `POST /findSimilar` | `FindSimilarJSONRequestBody` (`Url` required) | `*FindSimilarResponse` |
 | `GetContentsWithResponse` | `POST /contents` | `GetContentsJSONRequestBody` (`Urls` required) | `*ContentsResponse` |
 | `AnswerWithResponse` | `POST /answer` | `AnswerJSONRequestBody` (`Query` required) | `*AnswerResponse` |
-| `ResearchTasksCreateWithResponse` | `POST /research/v0/tasks` | `ResearchTasksCreateJSONRequestBody` (`Instructions` required) | nil; the created task is in `JSON201` |
-| `ResearchTasksListWithResponse` | `GET /research/v0/tasks` | `*ResearchTasksListParams` (`Cursor`, `Limit`) | a page of tasks |
-| `ResearchControllerV0GetResearchTaskWithResponse` | `GET /research/v0/tasks/{id}` | task ID | the task and its status |
+| `CreateAgentRunWithResponse` | `POST /agent/runs` | `*CreateAgentRunParams`, `CreateAgentRunJSONRequestBody` | Check the declared success fields in `CreateAgentRunResponse` |
+| `ListAgentRunsWithResponse` | `GET /agent/runs` | `*ListAgentRunsParams` (`Cursor`, `Limit`) | `*AgentRunList` |
+| `GetAgentRunWithResponse` | `GET /agent/runs/{id}` | run ID | `*AgentRun` |
 
-Search options on `SearchJSONRequestBody`: `Type` (`SearchJSONBodyTypeAuto`, `...Fast`, `...Neural`, `...Deep` and more), `NumResults`, `Category`, `IncludeDomains`, `ExcludeDomains`, `IncludeText`, `ExcludeText`, `StartPublishedDate`, `EndPublishedDate`, `StartCrawlDate`, `EndCrawlDate`, `UserLocation`, and `Contents` (a `*ContentsRequest`) to get page text, highlights or summaries back with the results.
+Search options on `SearchJSONRequestBody` include `NumResults`, `Category`, `IncludeDomains`, `ExcludeDomains`, publication and crawl date bounds, `Contents`, `Type` and `UserLocation`. Some options are unions; inspect the generated field type and its `From...` helpers rather than assigning older enum types. `Contents` uses `*ContentsRequest` to request text, highlights or summaries. The current specification removes the earlier research task API; use the agent run methods above.
 
 ## Responses
 
 | Field or method | Holds |
 |---|---|
-| `JSON200` (`JSON201` for `ResearchTasksCreateWithResponse`) | The decoded body on success, nil otherwise |
+| `JSON200`, `JSON201` and other declared status fields | The decoded body for that status, nil otherwise |
 | `Body`, `StatusCode()`, `Status()`, `HTTPResponse` | The raw response |
 
-- `SearchResponse.Results` is `*[]ResultWithContent`: `Url`, `Title`, `Author`, `PublishedDate`, `Id`, plus `Text`, `Highlights` and `Summary` when you asked for contents. `RequestId`, `SearchType` and `CostDollars` describe the call.
+- `SearchResponse` is a union. Call `AsSearchResultsResponse()` for ordinary results or `AsSearchSynthesisResponse()` for synthesis output. `SearchResultsResponse.Results` is `[]SearchResultOutput`, with required `Url`, `Title` and `Id` strings and optional content fields. `CostDollars` uses `CostDollarsOutput`.
 - Some fields are unions, a JSON value that can be one of several shapes. Read them with the generated `As...` methods: `AnswerResponse.Answer.AsAnswerResponseAnswer0()` gives the answer as a string, `AsAnswerResponseAnswer1()` gives the structured answer when the request set `OutputSchema`. Set a union field on a request with the matching `From...` method.
 - Wrappers that share a name with a schema get a `2` suffix: `SearchResponse2`, `AnswerResponse2`, `FindSimilarResponse2`.

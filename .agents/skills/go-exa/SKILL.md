@@ -1,6 +1,6 @@
 ---
 name: go-exa
-description: Unofficial Go client for the Exa search API, generated with oapi-codegen from the OpenAPI spec Exa publishes. Package `exa` (`github.com/psyb0t/go-exa`) talks to `https://api.exa.ai` with typed methods for every endpoint, including `SearchWithResponse` (web search with filters by domain, date, category and text, optional page contents), `FindSimilarWithResponse`, `GetContentsWithResponse` (text, highlights and summaries for URLs or result IDs), `AnswerWithResponse` (an answer with citations) and the research task endpoints. Use when Go code needs web search, page contents or cited answers from Exa, or already imports go-exa.
+description: "Use the unofficial go-exa client for web search, page contents, cited answers, agent runs and Websets in Go. Applies when adding Exa integration or working with an existing github.com/psyb0t/go-exa import."
 license: MIT
 homepage: https://github.com/psyb0t/go-exa
 user-invocable: true
@@ -26,7 +26,7 @@ For install, every operation, request options and response fields, see [referenc
 
 - Exa authenticates with an API key in the `x-api-key` header. Read it from the `EXA_API_KEY` environment variable. Never hardcode, commit or log it, and never print a request with its headers.
 - Requests go only to `https://api.exa.ai`. Search queries, URLs and answer prompts you send leave the machine for Exa, so do not put secrets or private data in them.
-- Every call is billed to the key's account; responses report the cost in `CostDollars`. Research tasks run long and cost more, so start them only when the user asked.
+- Calls can incur charges on the key's account; cost fields vary by endpoint. Agent runs can run long and cost more, so start them only when the user asked.
 
 ## When to use
 
@@ -45,7 +45,7 @@ The examples below cover a few calls. Every operation in the spec has a generate
 
 ```bash
 go doc github.com/psyb0t/go-exa ClientWithResponsesInterface  # every endpoint method
-go doc github.com/psyb0t/go-exa SearchJSONBody                # one method, params type or model
+go doc github.com/psyb0t/go-exa SearchJSONRequestBody         # one method, params type or model
 go doc -all github.com/psyb0t/go-exa                          # the whole package
 ```
 
@@ -93,10 +93,13 @@ if search.JSON200 == nil {
 	return fmt.Errorf("search: %s", search.Status())
 }
 
-if search.JSON200.Results != nil {
-	for _, result := range *search.JSON200.Results {
-		fmt.Println(*result.Url)
-	}
+results, err := search.JSON200.AsSearchResultsResponse()
+if err != nil {
+	return err
+}
+
+for _, result := range results.Results {
+	fmt.Println(result.Url)
 }
 
 answer, err := client.AnswerWithResponse(ctx, exa.AnswerJSONRequestBody{
@@ -106,7 +109,7 @@ if err != nil {
 	return err
 }
 
-if answer.JSON200 != nil && answer.JSON200.Answer != nil {
+if answer.JSON200 != nil {
 	text, err := answer.JSON200.Answer.AsAnswerResponseAnswer0() // string
 	if err == nil {
 		fmt.Println(text)

@@ -1,7 +1,7 @@
 {
   "name": "go-exa",
-  "version": "0.1.5",
-  "description": "Unofficial Go client for the Exa search API: search, find similar, page contents, cited answers and research tasks, generated from the spec Exa publishes.",
+  "version": "0.2.0",
+  "description": "Unofficial Go client for the Exa API: search, similar pages, page contents, cited answers, agent runs and Websets, generated from Exa's published specification.",
   "author": { "name": "psyb0t", "url": "https://github.com/psyb0t" },
   "homepage": "https://github.com/psyb0t/go-exa",
   "repository": "https://github.com/psyb0t/go-exa",

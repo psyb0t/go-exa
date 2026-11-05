@@ -1,0 +1,24 @@
+overlay: 1.0.0
+info:
+  title: Normalize unmapped inline discriminators for Go generation
+  version: 1.0.0
+actions:
+  - target: '$..[?(@.discriminator && !@.discriminator.mapping)].discriminator'
+    description: Remove discriminator hints without mappings; preserve union schemas and their type constants.
+    remove: true
+  - target: '$.components.schemas.JsonValue'
+    description: Preserve arbitrary recursive JSON without lossy numeric decoding.
+    update:
+      x-go-type: json.RawMessage
+      x-go-type-skip-optional-pointer: true
+  - target: '$.components.schemas.JsonValue.oneOf'
+    description: RawMessage already preserves every JSON kind, including null; avoid inconsistent nullable map generation.
+    remove: true
+  - target: '$.components.schemas.AnswerRequest.properties.outputSchema.properties.additionalProperties'
+    description: Keep the JSON Schema keyword distinct from the generated map of extra fields.
+    update:
+      x-go-name: AllowAdditionalProperties
+  - target: '$.components.schemas.OutputSchemaObject.properties.additionalProperties'
+    description: Keep the JSON Schema keyword distinct from the generated map of extra fields.
+    update:
+      x-go-name: AllowAdditionalProperties

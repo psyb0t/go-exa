@@ -5,5 +5,8 @@ generate:
 output: client.gen.go
 output-options:
   resolve-type-name-collisions: true
+  overlay:
+    path: spec-overlay.yml
+    strict: false
 compatibility:
   always-prefix-enum-values: true

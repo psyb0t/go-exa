@@ -72,44 +72,44 @@ func TestSearch(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode())
 	require.NotNil(t, res.JSON200)
-	require.NotNil(t, res.JSON200.Results)
+	parsed, err := res.JSON200.AsSearchResultsResponse()
+	require.NoError(t, err)
 
-	results := *res.JSON200.Results
+	results := parsed.Results
 	require.Len(t, results, 1)
-	assert.Equal(t, "req-1", *res.JSON200.RequestId)
-	assert.Equal(t, "https://example.com", *results[0].Url)
-	assert.Equal(t, "Example", *results[0].Title)
+	assert.Equal(t, "req-1", *parsed.RequestId)
+	assert.Equal(t, "https://example.com", results[0].Url)
+	assert.Equal(t, "Example", results[0].Title)
 }
 
-func TestGetResearchTask(t *testing.T) {
+func TestGetAgentRun(t *testing.T) {
 	t.Parallel()
 
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/research/v0/tasks/task-42", r.URL.Path)
+		assert.Equal(t, "/agent/runs/agent_run_example", r.URL.Path)
 		assert.Equal(t, testAPIKey, r.Header.Get("x-api-key"))
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{
-			"id": "task-42",
-			"instructions": "summarise",
+			"id": "agent_run_example",
 			"status": "completed",
-			"data": {"answer": "done"}
+			"output": {"text": "done", "structured": {"answer":"done"}}
 		}`))
 	})
 
-	res, err := client.ResearchControllerV0GetResearchTaskWithResponse(
+	res, err := client.GetAgentRunWithResponse(
 		context.Background(),
-		"task-42",
+		"agent_run_example",
 	)
 	require.NoError(t, err)
 	require.NotNil(t, res.JSON200)
-	assert.Equal(t, "task-42", res.JSON200.Id)
+	assert.Equal(t, "agent_run_example", res.JSON200.Id)
 	assert.Equal(
 		t,
-		exa.ResearchTaskDtoStatusCompleted,
+		exa.AgentRunStatusCompleted,
 		res.JSON200.Status,
 	)
-	require.NotNil(t, res.JSON200.Data)
-	assert.Equal(t, "done", (*res.JSON200.Data)["answer"])
+	assert.Equal(t, "done", res.JSON200.Output.Text)
+	assert.JSONEq(t, `{"answer":"done"}`, string(res.JSON200.Output.Structured))
 }

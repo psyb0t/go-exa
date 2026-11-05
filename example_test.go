@@ -44,12 +44,17 @@ func Example() {
 		panic(err)
 	}
 
-	if res.JSON200 == nil || res.JSON200.Results == nil {
+	if res.JSON200 == nil {
 		return
 	}
 
-	for _, result := range *res.JSON200.Results {
-		fmt.Println(*result.Url)
+	results, err := res.JSON200.AsSearchResultsResponse()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, result := range results.Results {
+		fmt.Println(result.Url)
 	}
 
 	// Output: https://example.com

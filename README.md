@@ -18,7 +18,7 @@ go get github.com/psyb0t/go-exa
 
 ## Usage
 
-Every endpoint in the spec has a typed method on `ClientWithResponses`: `Search`, `FindSimilar`, `GetContents`, `Answer`, `ResearchTasksCreate`, `ResearchTasksList` and `ResearchControllerV0GetResearchTask`.
+Every endpoint in the spec has a typed method on `ClientWithResponses`, including `Search`, `FindSimilar`, `GetContents`, `Answer` and the Agent and Websets APIs. The current specification removes the earlier research task operations and adds agent runs.
 
 ```go
 package main
@@ -52,12 +52,17 @@ func main() {
 		panic(err)
 	}
 
-	if res.JSON200 == nil || res.JSON200.Results == nil {
+	if res.JSON200 == nil {
 		return
 	}
 
-	for _, result := range *res.JSON200.Results {
-		fmt.Println(*result.Url)
+	results, err := res.JSON200.AsSearchResultsResponse()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, result := range results.Results {
+		fmt.Println(result.Url)
 	}
 }
 ```
@@ -83,7 +88,7 @@ make generate
 `gen.go` declares the steps, so `make generate` is just `go generate ./...`:
 
 - `scripts/fetch-spec.sh` downloads `exa-openapi-spec.yaml` from [exa-labs/openapi-spec](https://github.com/exa-labs/openapi-spec) to `api/openapi.yaml`.
-- oapi-codegen generates `client.gen.go` with `config.yaml`.
+- oapi-codegen applies `spec-overlay.yml` through `config.yaml` before generating `client.gen.go`. The overlay removes unmapped discriminator hints on inline event schemas, represents arbitrary recursive JSON with `json.RawMessage`, and names the JSON Schema `additionalProperties` field `AllowAdditionalProperties` to avoid a collision with generated extra-field storage. Raw JSON preserves objects, arrays, scalars and null without numeric conversion.
 
 `.github/workflows/regen.yml` does the same every day in CI. When the new spec changes the client, it runs `make lint`, `make test` and `make sec`. If a check fails, Claude edits the code and the checks run again, up to three times, and a review step reads the result. A passing change is committed with a CHANGELOG entry and tagged as the next release: a patch version for fixes and additions, a minor version for breaking changes.
 

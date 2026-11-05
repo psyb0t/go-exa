@@ -2,6 +2,11 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.2.0, 2026-11-05
+
+- Added a generator overlay for unmapped inline discriminators, recursive JSON values and JSON Schema additionalProperties naming collisions.
+- Breaking: regenerated Exa specification 2.0.0. SearchResponse is now a union; use AsSearchResultsResponse for ordinary results and AsSearchSynthesisResponse for synthesized output. The earlier research task methods are removed; use the Agent API methods for agent runs. Request models and required response fields also follow the current schema.
+
 ## v0.1.5, 2026-10-28
 
 - Updated Semgrep in the development image to 1.182.1 and refreshed its locked dependencies. certifi 2026.10.23 drops the emSign root CAs whose intermediate keys were compromised (GHSA-6q48-6c7w-9gw2).
