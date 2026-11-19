@@ -2,6 +2,13 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.2.1, 2026-11-19
+
+- Raised the minimum Go version in `go.mod` from 1.26.10 to 1.26.11, which fixes the `net/http` standard library vulnerability GO-2026-6859 found by govulncheck.
+- The development image is based on `golang:1.26.11-trixie` with a new pinned digest.
+- Updated the Go version in the go-exa skill setup reference.
+- No exported API changes.
+
 ## v0.2.0, 2026-11-05
 
 - Added a generator overlay for unmapped inline discriminators, recursive JSON values and JSON Schema additionalProperties naming collisions.
